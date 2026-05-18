@@ -1,19 +1,43 @@
-<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <id>com.github.loremigliore.livepreviewproject</id>
-    <name>live_preview-project</name>
-    <vendor>loremigliore</vendor>
-    <description><![CDATA[
-        <p><b>live_preview-project</b> is a repository that provides a pure template to make it easier to create a new plugin project.</p>
-        <p>The main goal of this template is to speed up the setup phase of plugin development for both new and experienced developers by preconfiguring the project scaffold and CI, linking to the proper documentation pages, and keeping everything organized.</p>
-    ]]></description>
+<id>com.github.loremigliore.livepreview</id>
+<name>Live Preview</name>
+<vendor>loremigliore</vendor>
 
-    <depends>com.intellij.modules.platform</depends>
+<depends>com.intellij.modules.platform</depends>
+<depends>com.intellij.modules.kotlin.k2</depends>
 
-    <resource-bundle>messages.MyBundle</resource-bundle>
+<extensions defaultExtensionNs="com.intellij">
 
-    <extensions defaultExtensionNs="com.intellij">
-        <toolWindow factoryClass="com.github.loremigliore.livepreviewproject.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
-        <postStartupActivity implementation="com.github.loremigliore.livepreviewproject.startup.MyProjectActivity" />
-    </extensions>
+    <toolWindow
+            id="LivePreview"
+            factoryClass="com.github.loremigliore.livepreview.toolWindow.LivePreviewWindowFactory"
+            icon="com.github.loremigliore.livepreview.icons.PluginIcons.ToolWindowIcon"
+            anchor="right"
+            order="after Notifications"
+            doNotActivateOnStart="true"/>
+
+    <applicationService
+            serviceImplementation="com.github.loremigliore.livepreview.settings.LivePreviewSettings"/>
+
+    <applicationConfigurable
+            parentId="tools"
+            id="visual.project.settings"
+            instance="com.github.loremigliore.livepreview.settings.LivePreviewSettingsConfigurable"
+            key="settings.display.name"
+            bundle="messages.LivePreviewBundle"/>
+
+    <codeInsight.lineMarkerProvider
+            language="kotlin"
+            implementationClass="com.github.loremigliore.livepreview.logic.PreviewLineMarkerProvider"/>
+
+    <postStartupActivity implementation="com.github.loremigliore.livepreview.startup.LivePreviewStartupActivity"/>
+</extensions>
+    <projectListeners>
+        <listener class="com.github.loremigliore.livepreview.listeners.KotlinFileOpenListener"
+                  topic="com.intellij.openapi.fileEditor.FileEditorManagerListener"/>
+        
+        <listener class="com.github.loremigliore.livepreview.listeners.PreviewHotReloadListener"
+                  topic="com.intellij.openapi.fileEditor.FileDocumentManagerListener"/>
+    </projectListeners>
+<resource-bundle>messages.LivePreviewBundle</resource-bundle>
 </idea-plugin>
